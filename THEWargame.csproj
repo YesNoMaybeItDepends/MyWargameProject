@@ -1,0 +1,14 @@
+<Project Sdk="Godot.NET.Sdk/3.3.0">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>THEWargame</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+  
+    <!-- <Compile Include="Scripts\States\*"/> -->
+  </ItemGroup>
+
+  <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+    </ItemGroup>
+</Project>

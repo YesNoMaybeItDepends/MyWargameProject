@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Assets/Polybro.png" type="Texture" id=1]
+[ext_resource path="res://Assets/demo.png" type="Texture" id=2]
+
+[sub_resource type="CSharpScript" id=1]
+
+[node name="Tile8" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="Sprite" type="Sprite" parent="Area2D"]
+texture = ExtResource( 2 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area2D"]
+visible = false
+position = Vector2( -36, -36 )
+polygon = PoolVector2Array( 80, 40, 80, 44, 59, 80, 13, 80, -8, 44, -8, 40, 13, 4, 59, 4 )
+
+[node name="Polybro" type="Sprite" parent="."]
+position = Vector2( 0, 3 )
+texture = ExtResource( 1 )
