@@ -1,13 +1,7 @@
 using Godot;
 using System;
 
-
-public interface Iinput
-{
-    void handleInput();
-}
-
-public class Hex : Area2D, Iinput
+public class Hex : InteractiveEntity
 {
     public OffsetCoordinates offsetPos;
     public AxialCoordinates axialPos;
@@ -82,39 +76,12 @@ public class Hex : Area2D, Iinput
         }
     }
 
-    public CollisionPolygon2D HexCollisionPolygon;
-    public Vector2[] HexPolygonVector = new Vector2[8]
-    {
-        new Vector2(80,40),
-        new Vector2(80,44),
-        new Vector2(59,80),
-        new Vector2(13,80),
-        new Vector2(-8,44),
-        new Vector2(-8,40),
-        new Vector2(13,4),
-        new Vector2(59,4)
-    }; 
-
     public Hex(Vector2 Position)
     {
         offsetPos = new OffsetCoordinates(Position);
         axialPos = new AxialCoordinates(offsetPos);
-        Name = "Tile";
-
-        // Add Collision Polygon
-        HexCollisionPolygon = new CollisionPolygon2D();
-        HexCollisionPolygon.Polygon = HexPolygonVector;
-        HexCollisionPolygon.Position = new Vector2(-36, -36); // TODO these should be 
-        AddChild(HexCollisionPolygon);
-
-        // Enable mouse interaction
-        InputPickable = true;
-        CollisionLayer = 1;
-    }
-
-    public void handleInput()
-    {
         
+        Name = "Tile";
     }
 
     public static Vector2 NW = new Vector2(-1,0);
@@ -123,4 +90,9 @@ public class Hex : Area2D, Iinput
     public static Vector2 SW = new Vector2(-1, 1);
     public static Vector2 S = new Vector2(0,1);
     public static Vector2 SE = new Vector2(1,0);
+
+    public override void onInputEvent(Godot.Object viewport, InputEvent @event, int shape_idx)
+    {
+        Helpers.GetStateManager().state.handleEvent(this);
+    }
 }

@@ -8,45 +8,28 @@ public class DefaultState : State
         Name = "State DefaultState";
     }
 
-    public override void handleInput(Godot.Collections.Array ColliderDicts)
-    {
-        // If Left Clicking
-        if (Input.IsMouseButtonPressed((int)ButtonList.Left))
-        {
-            // Select Unit
-            foreach (Godot.Collections.Dictionary collider in ColliderDicts)
-            {
-                if (collider["collider"] is Unit unit)
-                {
-                    
-                    //col.handleInput();
-                    unit.sprite.Modulate = Colors.GreenYellow;
-                    UnitSelected unitSelected = new UnitSelected(owner,unit);
-                    owner.state = unitSelected;
-                    return;
-                }
-            }
-        }
-    }
-
     public override void handleEvent(object o)
     {
         switch (o)
         {
             case Terrain terrain:
-                GD.Print("terrain");
+                // GD.Print("terrain");
                 break;
             case Unit unit:
-                GD.Print("unit");
+                if (Input.IsActionJustPressed("mouse_click_left"))
+                {
+                    UnitSelectedState unitSelected = new UnitSelectedState(owner, unit);
+                    owner.state = unitSelected;
+                }
                 break;
             case Hex hex:
-                GD.Print("hex");
+                // GD.Print("hex");
                 break;
             case null:
                 GD.Print("UH OH, NULL, STINKY!!");
                 break;
             default:
-                GD.Print("deafult");
+                GD.Print("default");
                 break;
         }
     }

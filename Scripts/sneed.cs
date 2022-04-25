@@ -29,7 +29,7 @@ public class sneed : Node2D
 	public Inputcontroller inputController;
 	public StateManager gameController;
 
-	public BlockDice dice;
+	public BlockDie dice;
 
 	// Called when the node enters the scene tree for the first time.
 	public override async void _Ready()
@@ -59,11 +59,12 @@ public class sneed : Node2D
 		Unit chuck = new Unit("sneed", polybro);
 		board.Grid[1,1].unit = chuck;
 
-		// dice = new BlockDice();
-		// AddChild(dice);
-		// dice.Position = new Vector2(-96,-96);
-
 		board.debugToggleTileNumbers(true, Board.coordinateTypes.offset);
+	}
+
+	void ligma(BlockDie.Faces face)
+	{
+		GD.Print(face);
 	}
 
 	void onUnitSelected(Unit unit)

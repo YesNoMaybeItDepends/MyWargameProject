@@ -24,44 +24,44 @@ public class Inputcontroller : Node2D
         gameController = GameController;
     }
 
-    public override void _PhysicsProcess(float delta)
-    {
-        //var rayLength = 100;
-        //var mousePos = GetViewport().GetMousePosition();
-        var mousePos = GetGlobalMousePosition();
-        // raycast.Position = mousePos;
-        // //raycast.Transform.origin = Level.camera.
-        // raycast.ForceRaycastUpdate();
-        // if (raycast.IsColliding())
-        // {
+    // public override void _PhysicsProcess(float delta)
+    // {
+    //     //var rayLength = 100;
+    //     //var mousePos = GetViewport().GetMousePosition();
+    //     var mousePos = GetGlobalMousePosition();
+    //     // raycast.Position = mousePos;
+    //     // //raycast.Transform.origin = Level.camera.
+    //     // raycast.ForceRaycastUpdate();
+    //     // if (raycast.IsColliding())
+    //     // {
             
-        //     var collider = raycast.GetCollider();
-        //     if (collider is Tile tile)
-        //     {
-        //         //var lol = Input.GetMouseMode();
-        //         GD.Print("WE FREAKIN GOTTEM REDDIT HELL YEAAAAAA");
-        //         GD.Print(tile.Name);
-        //         tile.handleInput();
-        //     }
-        // }
+    //     //     var collider = raycast.GetCollider();
+    //     //     if (collider is Tile tile)
+    //     //     {
+    //     //         //var lol = Input.GetMouseMode();
+    //     //         GD.Print("WE FREAKIN GOTTEM REDDIT HELL YEAAAAAA");
+    //     //         GD.Print(tile.Name);
+    //     //         tile.handleInput();
+    //     //     }
+    //     // }
 
 
-        var spaceState = GetWorld2d().DirectSpaceState;
-        //var result = spaceState.IntersectRay(mousePos, mousePos, collideWithAreas: true);
-        Godot.Collections.Array result = spaceState.IntersectPoint(mousePos, collideWithAreas: true);
+    //     var spaceState = GetWorld2d().DirectSpaceState;
+    //     //var result = spaceState.IntersectRay(mousePos, mousePos, collideWithAreas: true);
+    //     Godot.Collections.Array result = spaceState.IntersectPoint(mousePos, collideWithAreas: true);
         
-        if (result.Count > 0)
-        {
+    //     if (result.Count > 0)
+    //     {
             
-            foreach (Godot.Collections.Dictionary collider in result)
-            {
-                if (collider["collider"] is Iinput col)
-                {
-                    //col.handleInput();
-                    gameController.handleInput(result);
-                    break;
-                }
-            }
-        }   
-    }
+    //         foreach (Godot.Collections.Dictionary collider in result)
+    //         {
+    //             if (collider["collider"] is Iinput col)
+    //             {
+    //                 //col.handleInput();
+    //                 gameController.handleInput(result);
+    //                 break;
+    //             }
+    //         }
+    //     }   
+    // }
 }

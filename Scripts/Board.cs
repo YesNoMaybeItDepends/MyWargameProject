@@ -47,7 +47,7 @@ public class Board : Node2D
                 Hex tile = new Hex(new Vector2(col,row));
                 
                 // Set Tile Terrain
-                Terrain nuTerrain = new Terrain(terrain.name, terrain.sprite.Texture.ResourcePath);
+                Terrain nuTerrain = new Terrain(terrain.Name, terrain.sprite.Texture.ResourcePath);
                 tile.terrain = nuTerrain;
                 
                 // Set Tile Position

@@ -2,12 +2,15 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class UnitSelected : State
+public class UnitSelectedState : State
 {
     public Unit unitSelected;
     public List<Hex> highlightedHexes = new List<Hex>();
 
-    public UnitSelected(StateManager Owner, Unit unit) : base(Owner)
+    Unit hoveredUnit;
+    GhostDie ghostDie;
+
+    public UnitSelectedState(StateManager Owner, Unit unit) : base(Owner)
     {
         Name = "State UnitSelected";
 
@@ -16,120 +19,148 @@ public class UnitSelected : State
 
     public override void stateEnter()
     {
+        // TODO somehow mark what unit is selected
+        //unitSelected.sprite.Modulate = Colors.GreenYellow;
+        //unitSelected.sprite.Modulate = Colors.Green;
+        // READ THIS https://godotengine.org/qa/1616/z-value-for-custom-draw-calls
+        
+        //VisualServer.CanvasItemAddCircle()
+        
+        outlineUnit(unitSelected, Colors.White);
+
         highlightMovementRange();
+
+        ghostDie = new GhostDie();
+        AddChild(ghostDie);
+        Vector2 frameSize = ghostDie.Frames.GetFrame("default", 1).GetSize();
+        ghostDie.Visible = false;
     }
 
-    public override void handleInput(Godot.Collections.Array ColliderDicts)
+    void outlineUnit(Unit unit, Color color)
     {
-        // Right Click
+        ShaderMaterial shaderMat = new ShaderMaterial();
+        Shader shader = GD.Load("res://Shaders/Outline.tres") as Shader;
+        shaderMat.Shader = shader;
+        shaderMat.SetShaderParam("stroke",2.5f);
+        shaderMat.SetShaderParam("outline_color", color);
+        unit.sprite.Material = shaderMat;
+    }
+
+    public override void stateExit()
+    {
+        unitSelected.sprite.Material = null;
+    }
+
+    public override void _EnterTree()
+    {
+        
+    }
+
+    public override void handleEvent(object o)
+    {
+        // On Right Click
         if (Input.IsActionJustPressed("mouse_click_right"))
         {
-            foreach (Godot.Collections.Dictionary collider in ColliderDicts)
+            if (o is Hex hex)
             {
-                if (collider["collider"] is Hex hex)
+                // Move
+                if (hex.unit is null && unitSelected.movementPoints > 0)
                 {
-                    // Move
-                    if (hex.unit is null && unitSelected.movementPoints > 0)
+                    unitSelected.tile.unit = null;
+                    hex.unit = unitSelected;
+                    unitSelected.movementPoints--;
+                    foreach (Hex h in highlightedHexes)
                     {
-                        unitSelected.tile.unit = null;
-                        hex.unit = unitSelected;
-                        unitSelected.movementPoints--;
-                        foreach (Hex h in highlightedHexes)
-                        {
-                            h.terrain.sprite.Modulate = new Color(1,1,1);
-                        }
-                        highlightMovementRange();
+                        h.terrain.sprite.Modulate = new Color(1,1,1);
                     }
-                    // Attack
-                    else if (hex.unit != null && unitSelected.movementPoints > 0)
+                    highlightMovementRange();
+                }
+                // Attack
+                else if (hex.unit != null && unitSelected.movementPoints > 0)
+                {
+                    if (hex.unit != unitSelected)
                     {
-                        if (hex.unit != unitSelected)
-                        {
-                            // Get or spawn block dice
-                            BlockDice dice = unitSelected.GetNode("Block Dice") as BlockDice;
-                            if (dice is null)
-                            {
-                                dice = new BlockDice();
-                                unitSelected.AddChild(dice);
-                                dice.GlobalPosition = new Vector2(-96,-96);
-                            }
-                            
-                            // Roll dice
-                            dice.rollDie();
-                            
-                            // Handle resultt
-                            switch (dice.face)
-                            {
-                                case BlockDice.Faces.AttackerDown:
-                                    GD.Print("AttackerDown");
-                                    break;
-                                case BlockDice.Faces.DefenderPushed_1:
-                                    GD.Print("DefenderPushed_1");
-                                    break;
-                                case BlockDice.Faces.DefenderDown:
-                                    GD.Print("DefenderDown");
-                                    hex.unit.QueueFree();
-                                    hex.unit = null;
-                                    break;
-                                case BlockDice.Faces.DefenderStumbles:
-                                    GD.Print("DefenderStumbles");
-                                    break;
-                                case BlockDice.Faces.DefenderPushed_2:
-                                    GD.Print("DefenderPushed_2");
-                                    break;
-                                case BlockDice.Faces.BothDown:
-                                    GD.Print("BothDown");
-                                    break;
-                            }
+                        // get ghost die
+                        // activate it
+                        // switch to attack state
+                        UnitAttackingState attackState = new UnitAttackingState(owner, unitSelected, hex.unit);
+                        owner.state = attackState;
 
-                            // Exhaust all AP on attack
-                            unitSelected.movementPoints = 0;
-                            
-                            // unitSelected.RemoveChild(dice);
-                            // dice.QueueFree();
-                        }
+                        // Exhaust all AP on attack
+                        unitSelected.movementPoints = 0;
                     }
                 }
             }
         }
-        // Left Click
+        // On Left Click
         else if (Input.IsActionJustPressed("mouse_click_left"))
         {
-            foreach (Godot.Collections.Dictionary collider in ColliderDicts)
+            if (o is Hex hex)
             {
-                if (collider["collider"] is Hex hex)
+                // Select a different Unit
+                if (hex.unit != null)
                 {
-                    // Select a different Unit
-                    if (hex.unit != null)
+                    unitSelected.sprite.Material = null;
+                    unitSelected = hex.unit;
+                    outlineUnit(unitSelected, Colors.White);
+                    ghostDie.Visible = false;
+                    hoveredUnit = null;
+                    foreach (Hex h in highlightedHexes)
                     {
-                        unitSelected.sprite.Modulate = new Color(1,1,1);
-                        unitSelected = hex.unit;
-                        unitSelected.sprite.Modulate = Colors.GreenYellow;
-                        foreach (Hex h in highlightedHexes)
-                        {
-                            h.terrain.sprite.Modulate = new Color(1,1,1);
-                        }
-                        highlightMovementRange();
+                        h.terrain.sprite.Modulate = new Color(1,1,1);
                     }
-                    // Undo selection, return back to DefaultState
-                    else
-                    {
-                        unitSelected.sprite.Modulate = new Color(1,1,1);
-                        foreach (Hex h in highlightedHexes)
-                        {
-                            h.terrain.sprite.Modulate = new Color(1,1,1);
-                        }
-                        owner.state = new DefaultState(owner);
-                    }
+                    highlightMovementRange();
                 }
-                // Click on a block die
-                else if (collider["collider"] is BlockDice dice)
+                // Undo selection, return back to DefaultState
+                else
                 {
-
+                    unitSelected.sprite.Modulate = new Color(1,1,1);
+                    foreach (Hex h in highlightedHexes)
+                    {
+                        h.terrain.sprite.Modulate = new Color(1,1,1);
+                    }
+                    owner.state = new DefaultState(owner);
                 }
             }
         }
-    } 
+    }
+
+    public override void handleMouseEnter(object o)
+    {
+        if (o is Unit unit)
+        {
+            if (unit != hoveredUnit && unit != unitSelected)
+            {
+                    hoveredUnit = unit;
+
+                    outlineUnit(hoveredUnit,Colors.Red);
+
+                    Vector2 frameSize = ghostDie.Frames.GetFrame("default", 1).GetSize();
+                    
+                    float x = unit.GlobalPosition[0];
+                    float y = unit.GlobalPosition[1] - frameSize.y*1f;
+                    ghostDie.GlobalPosition = new Vector2(x,y);
+                    
+                    ghostDie.Visible = true;
+            }
+        }
+    }
+
+    public override void handleMouseExit(object o)
+    {
+        if (o is Unit unit)
+        {
+            if (unit == hoveredUnit)
+            {
+                if (unit != unitSelected)
+                {
+                    hoveredUnit.sprite.Material = null;
+                }
+                ghostDie.Visible = false;
+                hoveredUnit = null;
+            }
+        }
+    }
 
     public void highlightMovementRange()
     {        

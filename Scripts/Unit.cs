@@ -1,10 +1,8 @@
 using Godot;
 using System;
 
-public class Unit : Area2D, Iinput
+public class Unit : InteractiveEntity
 {
-    public Sprite sprite;
-    public String name;
     public Hex tile;
 
     bool canMove;
@@ -13,84 +11,37 @@ public class Unit : Area2D, Iinput
 
     public int maxMovementPoints = 3;
     public int movementPoints = 3;
-    public Vector2[] HexPolygon = new Vector2[8]
-    {
-        new Vector2(80,40),
-        new Vector2(80,44),
-        new Vector2(59,80),
-        new Vector2(13,80),
-        new Vector2(-8,44),
-        new Vector2(-8,40),
-        new Vector2(13,4),
-        new Vector2(59,4)
-    }; 
 
-    public Unit(String name, String texturePath)
+    internal Unit(String name, String texturePath)
     {
-        sprite = new Sprite();
         sprite.Texture = GD.Load(texturePath) as Texture;
-        AddChild(sprite);
-
-        CollisionPolygon2D collPolygon = new CollisionPolygon2D();
-        collPolygon.Polygon = HexPolygon;
-        collPolygon.Position = new Vector2(-36, -36);
-        AddChild(collPolygon);
-
-        //InputPickable = true;
-        CollisionLayer = 1;
 
         Name = name;
     }
 
-    // public void handleInput(InputEvent e)
-    // {
-    //     GD.Print("SNEED");
-    //     if (e is InputEventMouseButton button)
-    //     {
-    //         // if left click
-    //         if (button.Pressed && button.ButtonIndex == (int)ButtonList.Left)
-    //         {
-    //             // Select Unit if is not selected
-    //             if (!selected)
-    //             {
-    //                 GD.Print("sneed");
-    //                 selected = true;
-    //                 //sprite.Modulate = new Color(0.9f,0.9f,0.9f);
-    //                 sprite.Modulate = Colors.Green;
-    //             }
-    //         }
-    //     }
-    // }
-
-    public void Move(Hex tile)
+    public override void handleOnMouseEntered()
     {
-        
+        sprite.Modulate = new Color(0.9f,0.9f,0.9f);
+        //sprite.Modulate = Colors.Green;
+        Helpers.GetStateManager().state.handleMouseEnter(this);
+    }
+    
+    public override void handleOnMouseExited()
+    {
+        sprite.Modulate = new Color(1f,1f,1f);
+
+        Helpers.GetStateManager().state.handleMouseExit(this);
+    }
+
+    public override void onInputEvent(Godot.Object viewport, InputEvent @event, int shape_idx)
+    {
+
+        Helpers.GetStateManager().state.handleEvent(this);
     }
 
     public void handleInput()
     {
         GD.Print("NOOOOO");
-        // // if left click
-        // if (Input.IsMouseButtonPressed((int)ButtonList.Left))
-        // {
-        //     // Select Unit if is not selected
-        //     if (!selected)
-        //     {
-        //         GD.Print("sneed");
-        //         selected = true;
-        //         //sprite.Modulate = new Color(0.9f,0.9f,0.9f);
-        //         sprite.Modulate = Colors.Green;
-        //     }
-        // }
-        
-        // // if right click
-        // if (Input.IsMouseButtonPressed((int)ButtonList.Left))
-        // {
-        //     if (selected)
-        //     {
-
-        //     }
-        // }
     }
 }
 

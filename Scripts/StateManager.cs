@@ -15,9 +15,11 @@ public class StateManager : Node2D
             if (_state != null)
             {
                 _state.stateExit();
+                _state.QueueFree();
             }
             _state = value;
             _state.stateEnter();
+            AddChild(_state);
         }
     }
 
