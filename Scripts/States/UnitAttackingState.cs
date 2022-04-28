@@ -33,27 +33,30 @@ public class UnitAttackingState : State
     public void handleBlockDieResult(BlockDie.Faces result)
     {
         switch (die.face)
-            {
-                case BlockDie.Faces.AttackerDown:
-                    GD.Print("AttackerDown");
-                    break;
-                case BlockDie.Faces.DefenderPushed_1:
-                    GD.Print("DefenderPushed_1");
-                    break;
-                case BlockDie.Faces.DefenderDown:
-                    GD.Print("DefenderDown");
-                    target.QueueFree();
-                    target.tile.unit = null;
-                    break;
-                case BlockDie.Faces.DefenderStumbles:
-                    GD.Print("DefenderStumbles");
-                    break;
-                case BlockDie.Faces.DefenderPushed_2:
-                    GD.Print("DefenderPushed_2");
-                    break;
-                case BlockDie.Faces.BothDown:
-                    GD.Print("BothDown");
-                    break;
-            }
+        {
+            case BlockDie.Faces.AttackerDown:
+                GD.Print("AttackerDown");
+                break;
+            case BlockDie.Faces.DefenderPushed_1:
+                GD.Print("DefenderPushed_1");
+                break;
+            case BlockDie.Faces.DefenderDown:
+                GD.Print("DefenderDown");
+                target.tile.unit = null;
+                target.QueueFree();
+                break;
+            case BlockDie.Faces.DefenderStumbles:
+                GD.Print("DefenderStumbles");
+                break;
+            case BlockDie.Faces.DefenderPushed_2:
+                GD.Print("DefenderPushed_2");
+                break;
+            case BlockDie.Faces.BothDown:
+                GD.Print("BothDown");
+                break;
+        }
+
+        DefaultState state = new DefaultState(owner);
+        owner.state = state;
     }
 }

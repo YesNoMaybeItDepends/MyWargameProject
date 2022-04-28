@@ -53,11 +53,11 @@ public class sneed : Node2D
 		AddChild(board);
 		gameController.board = board;
 
-		Unit sneed = new Unit("sneed", polybro);
-		board.Grid[2,2].unit = sneed;
+		Unit sneed = new Unit("sneed", icon);
+		board.Grid[5,5].unit = sneed;
 
-		Unit chuck = new Unit("sneed", polybro);
-		board.Grid[1,1].unit = chuck;
+		Unit chuck = new Unit("sneed", icon);
+		board.Grid[6,6].unit = chuck;
 
 		board.debugToggleTileNumbers(true, Board.coordinateTypes.offset);
 	}

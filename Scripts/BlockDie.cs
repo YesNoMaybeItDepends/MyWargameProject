@@ -88,14 +88,13 @@ public class BlockDie : TextureButton
 
         EmitSignal("pickedBlockDie", (Faces)asprite.Frame);
 
-        if (asprite.Frame == 5)
-        {
-            asprite.Frame = 0;
-        }
-        asprite.Frame++;
-
-
+        // if (asprite.Frame == 5)
+        // {
+        //     asprite.Frame = 0;
+        // }
+        // asprite.Frame++;
     }
+
     public void up()
     {   
         shadermat.SetShaderParam("bright_amount", _shover);

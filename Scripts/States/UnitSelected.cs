@@ -6,6 +6,24 @@ public class UnitSelectedState : State
 {
     public Unit unitSelected;
     public List<Hex> highlightedHexes = new List<Hex>();
+    private bool _highlightMovement = false;
+    public bool highlightMovement 
+    {
+        get {return _highlightMovement;}
+        set
+        {
+            if (value == true)
+            {
+                MovementRangeHighlight();
+            }
+            else
+            {
+                RemoveMovementRangeHighlight();
+            }
+            
+            _highlightMovement = value;
+        }
+    }
 
     Unit hoveredUnit;
     GhostDie ghostDie;
@@ -28,7 +46,7 @@ public class UnitSelectedState : State
         
         outlineUnit(unitSelected, Colors.White);
 
-        highlightMovementRange();
+        MovementRangeHighlight();
 
         ghostDie = new GhostDie();
         AddChild(ghostDie);
@@ -48,7 +66,17 @@ public class UnitSelectedState : State
 
     public override void stateExit()
     {
+        // Disable active unit highlight
         unitSelected.sprite.Material = null;
+
+        if (hoveredUnit != null)
+        {
+            // Disable hovered unit highlight
+            hoveredUnit.sprite.Material = null;
+        }
+
+        // disable highlighted tiles
+
     }
 
     public override void _EnterTree()
@@ -69,25 +97,34 @@ public class UnitSelectedState : State
                     unitSelected.tile.unit = null;
                     hex.unit = unitSelected;
                     unitSelected.movementPoints--;
-                    foreach (Hex h in highlightedHexes)
-                    {
-                        h.terrain.sprite.Modulate = new Color(1,1,1);
-                    }
-                    highlightMovementRange();
+                    highlightMovement = false;
+                    highlightMovement = true;
                 }
                 // Attack
                 else if (hex.unit != null && unitSelected.movementPoints > 0)
                 {
-                    if (hex.unit != unitSelected)
+                    // TODO this shouldn't be like this, the problem is we can't do == on offset coordinates yet. This should also be a function called isInRange() or something like that
+                    bool inRange = false;
+                    var hexNeighbours = unitSelected.tile.offsetPos.GetNeighbours();
+                    foreach (OffsetCoordinates c in hexNeighbours)
                     {
-                        // get ghost die
-                        // activate it
-                        // switch to attack state
-                        UnitAttackingState attackState = new UnitAttackingState(owner, unitSelected, hex.unit);
-                        owner.state = attackState;
+                        // this is ToString() because we can't compare OffsetCoordinates yet. read above.
+                        if (c.ToString() == hex.offsetPos.ToString())
+                        {
+                            inRange = true;
+                        }
+                    }
+                    if (inRange)
+                    {
+                        if (hex.unit != unitSelected)
+                        {
+                            // Exhaust all AP on attack
+                            unitSelected.movementPoints = 0;
+                            highlightMovement = false;
 
-                        // Exhaust all AP on attack
-                        unitSelected.movementPoints = 0;
+                            UnitAttackingState attackState = new UnitAttackingState(owner, unitSelected, hex.unit);
+                            owner.state = attackState;
+                        }
                     }
                 }
             }
@@ -105,20 +142,14 @@ public class UnitSelectedState : State
                     outlineUnit(unitSelected, Colors.White);
                     ghostDie.Visible = false;
                     hoveredUnit = null;
-                    foreach (Hex h in highlightedHexes)
-                    {
-                        h.terrain.sprite.Modulate = new Color(1,1,1);
-                    }
-                    highlightMovementRange();
+                    highlightMovement = false;
+                    highlightMovement = true;
                 }
                 // Undo selection, return back to DefaultState
                 else
                 {
                     unitSelected.sprite.Modulate = new Color(1,1,1);
-                    foreach (Hex h in highlightedHexes)
-                    {
-                        h.terrain.sprite.Modulate = new Color(1,1,1);
-                    }
+                    highlightMovement = false;
                     owner.state = new DefaultState(owner);
                 }
             }
@@ -162,18 +193,34 @@ public class UnitSelectedState : State
         }
     }
 
-    public void highlightMovementRange()
-    {        
-        List<OffsetCoordinates> coordsInRange = unitSelected.tile.offsetPos.GetCoordinatesInRange(unitSelected.movementPoints);
-        
-        foreach (OffsetCoordinates coords in coordsInRange)
+    public void MovementRangeHighlight()
+    {   
+        if (unitSelected != null)
         {
-            Hex hex = owner.board.getHexAt(coords);
-            if (hex != null)
+            List<OffsetCoordinates> coordsInRange = unitSelected.tile.offsetPos.GetCoordinatesInRange(unitSelected.movementPoints);
+            
+            foreach (OffsetCoordinates coords in coordsInRange)
             {
-                highlightedHexes.Add(hex);
-                hex.terrain.sprite.Modulate = Colors.Gray;
+                Hex hex = owner.board.getHexAt(coords);
+                if (hex != null)
+                {
+                    highlightedHexes.Add(hex);
+                    hex.terrain.sprite.Modulate = Colors.Gray;
+                }
             }
+        }     
+    }
+
+    public void RemoveMovementRangeHighlight()
+    {
+        if (highlightedHexes.Count != 0)
+        {
+            foreach (Hex hex in highlightedHexes)
+            {
+                hex.terrain.sprite.Modulate = new Color(1,1,1);
+            }
+
+            highlightedHexes.Clear();
         }
     }
 }
