@@ -4,7 +4,50 @@ using System.Collections.Generic;
 
 public class UnitSelectedState : State
 {
-    public Unit unitSelected;
+    private Unit _unitSelected;
+    public Unit unitSelected
+    {
+        get
+        {
+            return _unitSelected;
+        }
+        set
+        {
+            // if it's the same unit
+            if (value == _unitSelected)
+            {
+                return;
+            }
+            // if it's a different unit 
+            else if (value != _unitSelected && _unitSelected != null)
+            {
+                // Deselect current unit
+                // TODO we're not disposing the material, we should queuefree it or pool it or something
+                unitSelected.sprite.Material = null;
+                RemoveMovementRangeHighlight();
+
+                // The new unit is currently outlined red, we must undo it
+                if (hoveredUnit != null)
+                {
+                    hoveredUnit.sprite.Material = null;
+                }
+
+                ghostDie.Visible = false;
+                hoveredUnit = null;
+            }
+            
+            // set new unit
+            _unitSelected = value;
+            
+            // if unit was not null
+            if (value != null)
+            {
+                outlineUnit(_unitSelected, Colors.White);
+                MovementRangeHighlight();
+            }
+        }
+    }
+
     public List<Hex> highlightedHexes = new List<Hex>();
     private bool _highlightMovement = false;
     public bool highlightMovement 
@@ -28,30 +71,26 @@ public class UnitSelectedState : State
     Unit hoveredUnit;
     GhostDie ghostDie;
 
+    Panel UnitPanel;
+
     public UnitSelectedState(StateManager Owner, Unit unit) : base(Owner)
     {
         Name = "State UnitSelected";
 
-        unitSelected = unit;
-    }
 
-    public override void stateEnter()
-    {
-        // TODO somehow mark what unit is selected
-        //unitSelected.sprite.Modulate = Colors.GreenYellow;
-        //unitSelected.sprite.Modulate = Colors.Green;
-        // READ THIS https://godotengine.org/qa/1616/z-value-for-custom-draw-calls
-        
-        //VisualServer.CanvasItemAddCircle()
-        
-        outlineUnit(unitSelected, Colors.White);
-
-        MovementRangeHighlight();
-
+        // Generate ghost die
         ghostDie = new GhostDie();
         AddChild(ghostDie);
         Vector2 frameSize = ghostDie.Frames.GetFrame("default", 1).GetSize();
         ghostDie.Visible = false;
+        
+        unitSelected = unit;
+    }
+
+    public override void _EnterTree()
+    {
+        UnitPanel = GetNode("CanvasLayer/UI/Unit Panel") as Panel;
+
     }
 
     void outlineUnit(Unit unit, Color color)
@@ -59,8 +98,10 @@ public class UnitSelectedState : State
         ShaderMaterial shaderMat = new ShaderMaterial();
         Shader shader = GD.Load("res://Shaders/Outline.tres") as Shader;
         shaderMat.Shader = shader;
+        
         shaderMat.SetShaderParam("stroke",2.5f);
         shaderMat.SetShaderParam("outline_color", color);
+
         unit.sprite.Material = shaderMat;
     }
 
@@ -76,12 +117,7 @@ public class UnitSelectedState : State
         }
 
         // disable highlighted tiles
-
-    }
-
-    public override void _EnterTree()
-    {
-        
+        highlightMovement = false;
     }
 
     public override void handleEvent(object o)
@@ -137,19 +173,11 @@ public class UnitSelectedState : State
                 // Select a different Unit
                 if (hex.unit != null)
                 {
-                    unitSelected.sprite.Material = null;
                     unitSelected = hex.unit;
-                    outlineUnit(unitSelected, Colors.White);
-                    ghostDie.Visible = false;
-                    hoveredUnit = null;
-                    highlightMovement = false;
-                    highlightMovement = true;
                 }
                 // Undo selection, return back to DefaultState
                 else
                 {
-                    unitSelected.sprite.Modulate = new Color(1,1,1);
-                    highlightMovement = false;
                     owner.state = new DefaultState(owner);
                 }
             }

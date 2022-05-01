@@ -1,5 +1,6 @@
 - gui
     - display unit info
+        - whenever a unit is selected, update the panel with that unit's info
     - display terrain info
     - display target info
     - end turn button

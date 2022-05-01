@@ -19,17 +19,13 @@ public class Board : Node2D
     // public int SpriteWidth = 64;
     // public int SpriteHeight = 64;
 
-    Vector2 OriginPosition = Vector2.Zero;
-
-    public Board(int gridHeight, int gridWidth)
+    public Board(int gridColumns, int gridRows)
     {
         Name = "Board";
 
-        Position = OriginPosition;
-
-        GridRows = gridWidth;
-        GridColumns = gridHeight;
-        Grid = new Hex[gridWidth,gridHeight];
+        GridRows = gridRows;
+        GridColumns = gridColumns;
+        Grid = new Hex[gridRows,gridColumns];
     }
 
     public void Initialize(Terrain terrain)
@@ -43,27 +39,27 @@ public class Board : Node2D
         {
             for (int row = 0; row < GridRows; row++)
             {              
-                // Make Tile
-                Hex tile = new Hex(new Vector2(col,row));
+                // Make hex
+                Hex hex = new Hex(new Vector2(col,row));
                 
-                // Set Tile Terrain
+                // Set hex Terrain
                 Terrain nuTerrain = new Terrain(terrain.Name, terrain.sprite.Texture.ResourcePath);
-                tile.terrain = nuTerrain;
+                hex.terrain = nuTerrain;
                 
-                // Set Tile Position
+                // Set hex Position
                 Vector2 position = new Vector2();
                 position.x = col * (float)hexHorizontalSpacing;
                 position.y = (((float)hexY/2) * (col%2)) + (row*(float)hexY);
-                tile.Position = position;
+                hex.Position = position;
 				
-                // Add Tile to Grid
-                Grid[col,row] = tile;
+                // Add hex to Grid
+                Grid[col,row] = hex;
                 
-                // Set Tile Name
-                tile.Name = $"{col},{row}";
+                // Set hex Name
+                hex.Name = $"{col},{row}";
 
-                // Append Tile to Board
-                AddChild(tile);
+                // Append hex to Board
+                AddChild(hex);
 			}
 		}
     }

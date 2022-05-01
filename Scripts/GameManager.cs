@@ -1,16 +1,10 @@
 using Godot;
 using System;
 
-public class sneed : Node2D
+public class GameManager : Node
 {
-	// Declare member variables here. Examples:
-	// private int a = 2;
-	// private string b = "text";
-
-	const int GRID_HEIGHT = 4;
-	const int GRID_WIDTH = 4;
-
-	int[,] grid = new int[GRID_WIDTH, GRID_HEIGHT];
+	const int GRID_COLUMNS = 15;
+	const int GRID_ROWS = 15;
 
 	Vector2 screenCenter;
 
@@ -29,13 +23,15 @@ public class sneed : Node2D
 	public Inputcontroller inputController;
 	public StateManager gameController;
 
-	public BlockDie dice;
-
 	// Called when the node enters the scene tree for the first time.
 	public override async void _Ready()
 	{
-		//camera = new Camera2D();
-		//AddChild(camera);
+		Helpers.SetGameManager(this);
+
+		camera = new Camera2D();
+		camera.Current = true;
+		AddChild(camera);
+
 		//DefaultState defaultState = new DefaultState();
 		gameController = new StateManager();
 		AddChild(gameController);
@@ -43,12 +39,9 @@ public class sneed : Node2D
 		inputController = new Inputcontroller(); 
 		inputController.Initialize(gameController);
 		AddChild(inputController);
-		
-		camera = GetChild(0) as Camera2D;
-		camera.Current = true;
 
+		board = new Board(GRID_COLUMNS, GRID_ROWS);
 		Terrain terrain = new Terrain("Plains", demo);
-		board = new Board(16,16);
 		board.Initialize(terrain);
 		AddChild(board);
 		gameController.board = board;
@@ -59,33 +52,11 @@ public class sneed : Node2D
 		Unit chuck = new Unit("sneed", icon);
 		board.Grid[6,6].unit = chuck;
 
-		board.debugToggleTileNumbers(true, Board.coordinateTypes.offset);
+		//board.debugToggleTileNumbers(true, Board.coordinateTypes.offset);
 	}
 
-	void ligma(BlockDie.Faces face)
-	{
-		GD.Print(face);
-	}
-
-	void onUnitSelected(Unit unit)
-	{
-		selectedUnit = unit;
-	}
-
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(float delta)
-	{
-		int velocity = 50;
-
-		if (Input.IsMouseButtonPressed(1))
-		{
-
-		}
-	}
-
-
-
+	// Camera Code
+	// TODO Where should it go? In InputController, or CameraManager?
     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventMouseButton mouseButton)
@@ -115,13 +86,6 @@ public class sneed : Node2D
 			if (isLeftClicking)
 			{
 				camera.Position -= mouseMotion.Relative;
-			}
-		}
-		if (@event is InputEventKey key)
-		{
-			if (key.Scancode == (int)KeyList.Space && key.Pressed)
-			{
-				dice.rollDie();
 			}
 		}
     }

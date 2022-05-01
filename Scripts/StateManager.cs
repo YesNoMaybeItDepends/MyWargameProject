@@ -12,11 +12,24 @@ public class StateManager : Node2D
         }
         set
         {
-            if (_state != null)
+            if (state != null)
             {
+                // Same state
+                if (value.GetType() == _state.GetType())
+                {
+                    // TODO update this so that if it's the same then it updates itself and doesn't actually instance a new state
+                    _state = value;
+                    _state.stateEnter();
+                    AddChild(_state);
+                    return;
+                }
+
+                // Cleanup old state
                 _state.stateExit();
                 _state.QueueFree();
             }
+
+            // Assign new state
             _state = value;
             _state.stateEnter();
             AddChild(_state);
@@ -39,9 +52,17 @@ public class StateManager : Node2D
         //Connect("OnInput", this, "handleInput");
     }
 
-    public void handleInput(Godot.Collections.Array ColliderDicts)
+    public void handleEvent(object o)
     {
-        state.handleInput(ColliderDicts);
+        state.handleEvent(o);
+    }
+    public void handleMouseEnter(object o)
+    {
+        state.handleMouseEnter(o);
     }
 
+    public void handleMouseExit(object o)
+    {
+        state.handleMouseExit(o);
+    }
 }

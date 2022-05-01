@@ -56,8 +56,8 @@ public class OffsetCoordinates
     public List<OffsetCoordinates> GetNeighbours()
     {
         List<OffsetCoordinates> neighbours = new List<OffsetCoordinates>();
-        
         AxialCoordinates axial = this.ToAxial(); 
+        
         foreach (AxialCoordinates direction in AxialCoordinates.DirectionVectors)
         {
             var neighbour = axial.AxialAdd(axial, direction);

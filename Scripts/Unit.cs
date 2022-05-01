@@ -23,20 +23,20 @@ public class Unit : InteractiveEntity
     {
         sprite.Modulate = new Color(0.9f,0.9f,0.9f);
         //sprite.Modulate = Colors.Green;
-        Helpers.GetStateManager().state.handleMouseEnter(this);
+        Helpers.GetInputController().handleMouseEnter(this);
     }
     
     public override void handleOnMouseExited()
     {
         sprite.Modulate = new Color(1f,1f,1f);
 
-        Helpers.GetStateManager().state.handleMouseExit(this);
+        Helpers.GetInputController().handleMouseExit(this);
     }
 
     public override void onInputEvent(Godot.Object viewport, InputEvent @event, int shape_idx)
     {
 
-        Helpers.GetStateManager().state.handleEvent(this);
+        Helpers.GetInputController().handleEvent(this);
     }
 
     public void handleInput()

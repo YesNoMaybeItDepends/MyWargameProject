@@ -10,6 +10,7 @@ public class DefaultState : State
 
     public override void handleEvent(object o)
     {
+        // Handle common input
         switch (o)
         {
             case Terrain terrain:
