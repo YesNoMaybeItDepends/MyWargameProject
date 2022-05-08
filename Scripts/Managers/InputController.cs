@@ -1,14 +1,16 @@
 using Godot;
 using System;
 
-public class Inputcontroller : Node2D
+public class Inputcontroller : Node2D, IService
 {
     public GameManager Level;
     public StateManager stateManager;
 
+    public Unit hoveredUnit;
+
     public Inputcontroller()
     {
-        Helpers.SetInputController(this);
+        ServiceProvider.SetService<Inputcontroller>(this);
     }
 
     public void Initialize(StateManager StateManager)

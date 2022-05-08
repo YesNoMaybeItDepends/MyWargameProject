@@ -4,7 +4,9 @@ using System.Collections.Generic;
 
 public class OffsetCoordinates
 {
+    /// <summary> Columns </summary>
     public int x;
+    /// <summary> Rows </summary>
     public int y;
 
     #region Constructors
@@ -21,7 +23,17 @@ public class OffsetCoordinates
         y = (int)v2.y;
     }
 
+    public OffsetCoordinates(AxialCoordinates a)
+    {
+        x = a.q;
+        y = a.r + (a.q - (a.q & 1)) / 2;
+    }
 
+    public OffsetCoordinates(CubeCoordinates c)
+    {
+        x = c.q;
+        y = c.r + (c.q - (c.q & 1)) / 2;
+    }
 
     #endregion
 
@@ -49,6 +61,15 @@ public class OffsetCoordinates
         return new AxialCoordinates(q,r);
     }
     
+    public CubeCoordinates ToCube()
+    {
+        int q = x;
+        int r = y - (x - (x & 1)) / 2;
+        int s = -q-r;
+
+        return new CubeCoordinates(q,r,s);
+    }
+
     #endregion
 
     #region Etc
@@ -81,6 +102,24 @@ public class OffsetCoordinates
         }
 
         return coordinates;
+    }
+
+    public OffsetCoordinates rotateVectorLeft(OffsetCoordinates Center)
+    {
+        CubeCoordinates hex = this.ToCube();
+        CubeCoordinates center = Center.ToCube();
+        CubeCoordinates cubeRotated = hex.rotateVectorLeft(center);
+
+        return new OffsetCoordinates(cubeRotated);
+    }
+
+    public OffsetCoordinates rotateVectorRight(OffsetCoordinates Center)
+    {
+        CubeCoordinates hex = this.ToCube();
+        CubeCoordinates center = Center.ToCube();
+        CubeCoordinates cubeRotated = hex.rotateVectorRight(center);
+        
+        return new OffsetCoordinates(cubeRotated);
     }
 
     #endregion

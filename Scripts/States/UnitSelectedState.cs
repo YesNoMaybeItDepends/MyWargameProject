@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class UnitSelectedState : State
 {
+    private SelectedPanel panel;
     private Unit _unitSelected;
     public Unit unitSelected
     {
@@ -23,7 +24,8 @@ public class UnitSelectedState : State
             {
                 // Deselect current unit
                 // TODO we're not disposing the material, we should queuefree it or pool it or something
-                unitSelected.sprite.Material = null;
+                _unitSelected.selected = false;
+                _unitSelected.sprite.Material = null;
                 RemoveMovementRangeHighlight();
 
                 // The new unit is currently outlined red, we must undo it
@@ -34,6 +36,12 @@ public class UnitSelectedState : State
 
                 ghostDie.Visible = false;
                 hoveredUnit = null;
+
+                if (panel != null)
+                {
+                    panel.unit = null;
+                    panel.Visible = false;
+                }
             }
             
             // set new unit
@@ -42,8 +50,14 @@ public class UnitSelectedState : State
             // if unit was not null
             if (value != null)
             {
+                value.selected = true;
                 outlineUnit(_unitSelected, Colors.White);
                 MovementRangeHighlight();
+                // Update Unit Panel
+                if (panel != null)
+                {
+                    panel.Set(value);
+                }
             }
         }
     }
@@ -71,26 +85,19 @@ public class UnitSelectedState : State
     Unit hoveredUnit;
     GhostDie ghostDie;
 
-    Panel UnitPanel;
-
     public UnitSelectedState(StateManager Owner, Unit unit) : base(Owner)
     {
         Name = "State UnitSelected";
-
+        
+        panel = ServiceProvider.GetService<GuiManager>().selectedPanel;
+        
+        unitSelected = unit;
 
         // Generate ghost die
         ghostDie = new GhostDie();
         AddChild(ghostDie);
         Vector2 frameSize = ghostDie.Frames.GetFrame("default", 1).GetSize();
         ghostDie.Visible = false;
-        
-        unitSelected = unit;
-    }
-
-    public override void _EnterTree()
-    {
-        UnitPanel = GetNode("CanvasLayer/UI/Unit Panel") as Panel;
-
     }
 
     void outlineUnit(Unit unit, Color color)
@@ -107,6 +114,7 @@ public class UnitSelectedState : State
 
     public override void stateExit()
     {
+        
         // Disable active unit highlight
         unitSelected.sprite.Material = null;
 
@@ -118,6 +126,11 @@ public class UnitSelectedState : State
 
         // disable highlighted tiles
         highlightMovement = false;
+
+        panel.unit = null;
+        panel.Visible = false;
+        
+        unitSelected = null;
     }
 
     public override void handleEvent(object o)
@@ -188,7 +201,7 @@ public class UnitSelectedState : State
     {
         if (o is Unit unit)
         {
-            if (unit != hoveredUnit && unit != unitSelected)
+            if (unit != hoveredUnit && unit != unitSelected && unitSelected.movementPoints > 0)
             {
                     hoveredUnit = unit;
 

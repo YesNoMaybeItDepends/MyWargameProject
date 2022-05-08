@@ -32,31 +32,50 @@ public class UnitAttackingState : State
 
     public void handleBlockDieResult(BlockDie.Faces result)
     {
-        switch (die.face)
+        if (target != null)
         {
-            case BlockDie.Faces.AttackerDown:
-                GD.Print("AttackerDown");
-                break;
-            case BlockDie.Faces.DefenderPushed_1:
-                GD.Print("DefenderPushed_1");
-                break;
-            case BlockDie.Faces.DefenderDown:
-                GD.Print("DefenderDown");
-                target.tile.unit = null;
-                target.QueueFree();
-                break;
-            case BlockDie.Faces.DefenderStumbles:
-                GD.Print("DefenderStumbles");
-                break;
-            case BlockDie.Faces.DefenderPushed_2:
-                GD.Print("DefenderPushed_2");
-                break;
-            case BlockDie.Faces.BothDown:
-                GD.Print("BothDown");
-                break;
-        }
+            State nextState = new DefaultState(owner);
+            switch (die.face)
+            {
+                case BlockDie.Faces.AttackerDown:
+                    GD.Print("AttackerDown");
+                    kill(attacker);
+                    nextState = new DefaultState(owner);
+                    break;
+                case BlockDie.Faces.DefenderPushed_1:
+                    nextState = new PushState(owner, result, attacker,target);
+                    break;
+                case BlockDie.Faces.DefenderDown:
+                    GD.Print("DefenderDown");
+                    nextState = new PushState(owner, result, attacker,target);
+                    break;
+                case BlockDie.Faces.DefenderStumbles:
+                    GD.Print("DefenderStumbles");
+                    nextState = new PushState(owner, result, attacker,target);
+                    break;
+                case BlockDie.Faces.DefenderPushed_2:
+                    nextState = new PushState(owner, result, attacker,target);
+                    break;
+                case BlockDie.Faces.BothDown:
+                    GD.Print("BothDown");
+                    kill(target);
+                    kill(attacker);
+                    nextState = new DefaultState(owner);
+                    break;
+            }
 
-        DefaultState state = new DefaultState(owner);
-        owner.state = state;
+            owner.state = nextState;
+        }
+    }
+
+    private void kill(Unit unit)
+    {
+        unit.tile.unit = null;
+        unit.QueueFree();
+    }
+
+    public override void stateExit()
+    {
+        die.QueueFree();
     }
 }

@@ -57,8 +57,12 @@ public class AxialCoordinates
     // From Cube
     public AxialCoordinates(CubeCoordinates c)
     {
-        q = CubeCoordinates.ToAxial(c).q;
-        r = CubeCoordinates.ToAxial(c).r;
+        q = c.q;
+        r = c.r;
+        
+        // TODO nani ?
+        //q = c.ToAxial().q;
+        //r = c.ToAxial().r;
     } 
     
     #endregion
@@ -66,10 +70,10 @@ public class AxialCoordinates
     #region Conversions
 
     // Static To Offset
-    public static OffsetCoordinates ToOffset(AxialCoordinates c)
+    public OffsetCoordinates ToOffset(AxialCoordinates a)
     {
-        int x = c.q;
-        int y = c.r + (c.q - (c.q & 1)) / 2;
+        int x = a.q;
+        int y = a.r + (a.q - (a.q & 1)) / 2;
 
         return new OffsetCoordinates(x,y);
     }
@@ -84,16 +88,13 @@ public class AxialCoordinates
     }
 
     // To Cube
-    public static CubeCoordinates ToCube(AxialCoordinates c)
+    public CubeCoordinates ToCube()
     {
-        int q = c.q;
-        int r = c.r;
-        int s = -c.q - c.r;
         return new CubeCoordinates(q,r,s);
     }
 
     // To Vector2
-    public static Vector2 ToVector2(AxialCoordinates c)
+    public Vector2 ToVector2(AxialCoordinates c)
     {
         float x = (float)c.q;
         float y = (float)c.r;
@@ -104,10 +105,42 @@ public class AxialCoordinates
 
     #region Arithmetic
 
+    // Addition
     public AxialCoordinates AxialAdd(AxialCoordinates a1, AxialCoordinates a2)
     {
         //return new Vector2(hex.x + vec.x, hex.y + vec.x);
         return new AxialCoordinates(a1.q + a2.q, a1.r + a2.r);
+    }
+
+    // Addition Operator
+    public static AxialCoordinates operator +(AxialCoordinates a1, AxialCoordinates a2)
+    {
+        //return new Vector2(hex.x + vec.x, hex.y + vec.x);
+        return new AxialCoordinates(a1.q + a2.q, a1.r + a2.r);
+    }
+
+    // Substraction
+    public AxialCoordinates AxialSubstract(AxialCoordinates a1, AxialCoordinates a2)
+    {
+        return new AxialCoordinates(a1.q - a2.q, a1.r - a2.r);
+    }
+
+    // Substraction Operator
+    public static AxialCoordinates operator -(AxialCoordinates a1, AxialCoordinates a2)
+    {
+        return new AxialCoordinates(a1.q - a2.q, a1.r - a2.r);
+    }
+
+    // Multiplication
+    public AxialCoordinates AxialMultiply(AxialCoordinates a1, int i)
+    {
+        return new AxialCoordinates(a1.q * i, a1.r * i);
+    }
+
+    // Multiplication Operator
+    public static AxialCoordinates operator *(AxialCoordinates a1, int i)
+    {
+        return new AxialCoordinates(a1.q * i, a1.r * i);
     }
 
     #endregion
@@ -140,8 +173,8 @@ public class AxialCoordinates
 
     public int Distance(AxialCoordinates a, AxialCoordinates b)
     {
-        CubeCoordinates ac = ToCube(a);
-        CubeCoordinates bc = ToCube(b);
+        CubeCoordinates ac = a.ToCube();
+        CubeCoordinates bc = b.ToCube();
         return CubeCoordinates.Distance(ac,bc);
     }
 

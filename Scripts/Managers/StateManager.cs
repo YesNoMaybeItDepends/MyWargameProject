@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class StateManager : Node2D
+public class StateManager : Node2D, IService
 {
     private State _state;
     public State state
@@ -41,7 +41,7 @@ public class StateManager : Node2D
     public StateManager()
     {
         Name = "State Manager";
-        Helpers.SetStateManager(this);
+        ServiceProvider.SetService<StateManager>(this);
         DefaultState defaultState = new DefaultState(this);
         state = defaultState;
     }

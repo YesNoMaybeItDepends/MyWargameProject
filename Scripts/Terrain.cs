@@ -37,6 +37,6 @@ public class Terrain : InteractiveEntity
 
     public override void onInputEvent(Godot.Object viewport, InputEvent @event, int shape_idx)
     {
-        Helpers.GetInputController().handleEvent(this);
+        ServiceProvider.GetService<Inputcontroller>().handleEvent(this);
     }
 }
