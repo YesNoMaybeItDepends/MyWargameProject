@@ -1,0 +1,10 @@
+res://Assets/PH2_DeadPlainsGray_04.png
+res://Assets/PH2_DesertTropic_00.png
+res://Assets/PH2_FjordSummer_08.png
+res://Assets/PH2_IslandsOceans_24.png
+res://Assets/PH2_IslandsOceans_27.png
+res://Assets/PH2_SmoothMtnBrn_00.png
+res://Assets/PH2_SmoothMtnBrn_12.png
+res://Assets/PH2_SmoothMtnGrn_00.png
+res://Assets/PH2_SmoothMtnGrn_12.png
+res://Assets/PH2_SmoothMtnGrn_62.png

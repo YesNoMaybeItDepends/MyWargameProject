@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class UnitSelectedState : State
 {
+    Map board;
     private SelectedPanel panel;
     private Unit _unitSelected;
     public Unit unitSelected
@@ -87,6 +88,8 @@ public class UnitSelectedState : State
 
     public UnitSelectedState(StateManager Owner, Unit unit) : base(Owner)
     {
+        board = ServiceProvider.GetService<GameManager>().board;
+
         Name = "State UnitSelected";
         
         panel = ServiceProvider.GetService<GuiManager>().selectedPanel;
@@ -116,7 +119,10 @@ public class UnitSelectedState : State
     {
         
         // Disable active unit highlight
-        unitSelected.sprite.Material = null;
+        if (unitSelected != null)
+        {
+            unitSelected.sprite.Material = null;
+        }
 
         if (hoveredUnit != null)
         {
@@ -130,7 +136,7 @@ public class UnitSelectedState : State
         panel.unit = null;
         panel.Visible = false;
         
-        unitSelected = null;
+        //unitSelected = null;
     }
 
     public override void handleEvent(object o)
@@ -141,13 +147,10 @@ public class UnitSelectedState : State
             if (o is Hex hex)
             {
                 // Move
-                if (hex.unit is null && unitSelected.movementPoints > 0)
+                if (unitSelected.Move(hex))// && !unitSelected.unitStateManager.state is UnitMovingState)
                 {
-                    unitSelected.tile.unit = null;
-                    hex.unit = unitSelected;
-                    unitSelected.movementPoints--;
-                    highlightMovement = false;
-                    highlightMovement = true;
+                    // highlightMovement = false;
+                    // highlightMovement = true;
                 }
                 // Attack
                 else if (hex.unit != null && unitSelected.movementPoints > 0)
@@ -191,8 +194,20 @@ public class UnitSelectedState : State
                 // Undo selection, return back to DefaultState
                 else
                 {
+                    unitSelected = null;
                     owner.state = new DefaultState(owner);
                 }
+            }
+        }
+        // On Middle Click
+        // DEBUG
+        // TODO move to common controls
+        else if (Input.IsActionJustPressed("mouse_click_middle"))
+        {
+            if (o is Hex hex)
+            {
+                hex.QueueFree();
+                hex.board.Hexes[hex.offsetPos.x, hex.offsetPos.y] = null;
             }
         }
     }
@@ -242,7 +257,7 @@ public class UnitSelectedState : State
             
             foreach (OffsetCoordinates coords in coordsInRange)
             {
-                Hex hex = owner.board.getHexAt(coords);
+                Hex hex = board.getHexAt(coords);
                 if (hex != null)
                 {
                     highlightedHexes.Add(hex);

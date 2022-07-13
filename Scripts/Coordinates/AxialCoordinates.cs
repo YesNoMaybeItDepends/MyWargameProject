@@ -171,11 +171,11 @@ public class AxialCoordinates
         return AxialAdd(pos, GetDirectionVector(direction));
     }
 
-    public int Distance(AxialCoordinates a, AxialCoordinates b)
+    public int DistanceTo(AxialCoordinates b)
     {
-        CubeCoordinates ac = a.ToCube();
+        CubeCoordinates ac = this.ToCube();
         CubeCoordinates bc = b.ToCube();
-        return CubeCoordinates.Distance(ac,bc);
+        return CubeCoordinates.DistanceTo(ac,bc);
     }
 
     // ACTUALLY RETURNS OFFSET COORDS?

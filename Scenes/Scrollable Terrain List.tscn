@@ -1,0 +1,8 @@
+[gd_scene format=2]
+
+[node name="Scrollable Terrain List" type="ScrollContainer"]
+margin_right = 234.0
+margin_bottom = 600.0
+scroll_horizontal_enabled = false
+
+[node name="Terrains" type="VBoxContainer" parent="."]

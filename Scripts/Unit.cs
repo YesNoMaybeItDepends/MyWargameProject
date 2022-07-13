@@ -1,9 +1,12 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class Unit : InteractiveEntity
 {
     public Hex tile;
+    public StateManager unitStateManager;
 
     bool canMove;
     bool canAttack;
@@ -11,12 +14,55 @@ public class Unit : InteractiveEntity
 
     public int maxMovementPoints = 3;
     public int movementPoints = 3;
-
+    
     internal Unit(String name, String texturePath)
     {
         sprite.Texture = GD.Load(texturePath) as Texture;
 
         Name = name;
+
+        ZIndex = 1;
+
+        unitStateManager = new StateManager();
+        AddChild(unitStateManager);
+
+        DefaultUnitState defaultUnitState = new DefaultUnitState(unitStateManager);
+        unitStateManager.state = defaultUnitState;
+    }
+
+    public bool Move(Hex hex)
+    {
+        if (hex.unit is null)
+        {
+            int distanceTo = tile.axialPos.DistanceTo(hex.axialPos);
+
+            if (movementPoints >= distanceTo) // is valid goal
+            {
+                List<Hex> path;
+                UnitMovingState s;
+                // if unit is already moving
+                if (unitStateManager.state is UnitMovingState unitMovingState)
+                {
+                    GD.Print("sneed");
+                    s = unitMovingState;
+                    path = Pathfinding.GetPath(unitMovingState.targetPos, hex);
+                    path.RemoveAt(0);
+                    GD.Print(s.pathsToAdd.Count);
+                    s.pathsToAdd.AddRange(path);
+                    GD.Print(s.pathsToAdd.Count);
+                }
+                else
+                {
+                    path = Pathfinding.GetPath(tile, hex);
+                    s = new UnitMovingState(unitStateManager, this, path);
+                    unitStateManager.state = s;
+                    s.Move();
+                }
+                
+                return true;
+            }
+        }
+        return false;
     }
 
     public override void handleOnMouseEntered()
@@ -51,7 +97,6 @@ public class Unit : InteractiveEntity
             // if unit is selected
             if (s.unit.selected)
             {
-                GD.Print("np");
                 // hide target
                 if (t.unit != null && t.unit == this)
                 {
@@ -95,7 +140,6 @@ public class Unit : InteractiveEntity
 
     public override void onInputEvent(Godot.Object viewport, InputEvent @event, int shape_idx)
     {
-
         ServiceProvider.GetService<Inputcontroller>().handleEvent(this);
     }
 

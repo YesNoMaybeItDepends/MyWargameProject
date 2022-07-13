@@ -3,8 +3,8 @@
         - whenever a unit is selected, update the panel with that unit's info
         - CanvasLayer/UI/Panel2/HBoxContainer/VBoxContainer/Name
     - display terrain info
-    - display target info
     - end turn button
+        - does nothing right now
 
 - handle block results
     - pushback

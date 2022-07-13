@@ -17,7 +17,7 @@ public class GuiManager : Node, IService
 
     public override void _EnterTree()
     {
-        UI = GetNode("/root/Node2D/CanvasLayer/UI") as Control;
+        UI = GetNode("/root/Game Manager/CanvasLayer/UI") as Control;
         selectedPanel = UI.GetNode("Bottom/Unit Panel") as SelectedPanel;
         targetPanel = UI.GetNode("Bottom/Target Panel") as TargetPanel;
         selectedPlaceholder = UI.GetNode("Bottom/Selected Placeholder") as Control;

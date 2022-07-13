@@ -5,6 +5,7 @@ using System;
 public class Terrain : InteractiveEntity
 {
     public CollisionPolygon2D HexShape;
+    public int MovementCost = 1;
  
     public Vector2[] HexPolygon = new Vector2[8]
     {
@@ -23,6 +24,13 @@ public class Terrain : InteractiveEntity
         sprite.Texture = GD.Load(texturePath) as Texture;
 
         Name = "Plains";
+    }
+
+    public Terrain(String name, int movementCost, Texture texture)
+    {
+        sprite.Texture = texture;
+        Name = name;
+        MovementCost = movementCost;
     }
 
     public override void handleOnMouseEntered()

@@ -36,19 +36,13 @@ public class StateManager : Node2D, IService
         }
     }
 
-    public Board board;
-
     public StateManager()
     {
         Name = "State Manager";
-        ServiceProvider.SetService<StateManager>(this);
-        DefaultState defaultState = new DefaultState(this);
-        state = defaultState;
     }
 
-    public void Initialize(Board Board)
+    public void Initialize()
     {
-        board = Board;
         //Connect("OnInput", this, "handleInput");
     }
 

@@ -1,8 +1,10 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class Hex : InteractiveEntity
 {
+    public Map board;
     public OffsetCoordinates offsetPos;
     public AxialCoordinates axialPos;
     public int x {get{return offsetPos.x;}}
@@ -76,20 +78,39 @@ public class Hex : InteractiveEntity
         }
     }
 
-    public Hex(Vector2 Position)
+    public Hex(Vector2 Position, Map Board)
     {
+        board = Board;
+
         offsetPos = new OffsetCoordinates(Position);
         axialPos = new AxialCoordinates(offsetPos);
         
-        Name = "Tile";
+        Name = "Tile "+offsetPos.x+", "+offsetPos.y;
     }
 
-    public static Vector2 NW = new Vector2(-1,0);
-    public static Vector2 N = new Vector2(0, -1);
-    public static Vector2 NE = new Vector2(1,-1);
-    public static Vector2 SW = new Vector2(-1, 1);
-    public static Vector2 S = new Vector2(0,1);
-    public static Vector2 SE = new Vector2(1,0);
+    public List<Hex> GetNeighbours()
+    {
+        List<Hex> neighbours = new List<Hex>();
+
+        var neighbouringCoordinates = offsetPos.GetNeighbours();
+        foreach (OffsetCoordinates coords in neighbouringCoordinates)
+        {
+            Hex hex = board.getHexAt(coords);
+            if (hex != null)
+            {
+                neighbours.Add(hex);
+            }
+        }
+
+        return neighbours;
+    }
+
+    // public static Vector2 NW = new Vector2(-1,0);
+    // public static Vector2 N = new Vector2(0, -1);
+    // public static Vector2 NE = new Vector2(1,-1);
+    // public static Vector2 SW = new Vector2(-1, 1);
+    // public static Vector2 S = new Vector2(0,1);
+    // public static Vector2 SE = new Vector2(1,0);
 
     public override void onInputEvent(Godot.Object viewport, InputEvent @event, int shape_idx)
     {

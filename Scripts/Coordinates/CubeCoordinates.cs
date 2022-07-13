@@ -74,7 +74,7 @@ public class CubeCoordinates
 
     #region Etc
     
-    public static int Distance(CubeCoordinates a, CubeCoordinates b)
+    public static int DistanceTo(CubeCoordinates a, CubeCoordinates b)
     {
         CubeCoordinates v = Substract(a,b);
         return (Math.Abs(v.q) + Math.Abs(v.r) + Math.Abs(v.s))/2;

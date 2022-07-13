@@ -3,8 +3,11 @@ using System;
 
 public class GameManager : Node, IService
 {
-	const int GRID_COLUMNS = 15;
-	const int GRID_ROWS = 15;
+	// const int GRID_COLUMNS = 15;
+	// const int GRID_ROWS = 15;
+
+	const int GRID_COLUMNS = 30;
+	const int GRID_ROWS = 30;
 
 	Vector2 screenCenter;
 
@@ -18,51 +21,67 @@ public class GameManager : Node, IService
 
 	public Camera2D camera;
 
-	Board board;
+	public Map board;
 	public Unit selectedUnit = null;
 	
 	bool isLeftClicking = false;
 	public Inputcontroller inputController;
-	public StateManager stateManager;
+	public StateManager gameStateManager;
 
 	// Called when the node enters the scene tree for the first time.
 	public override async void _Ready()
 	{
+		Name = "Game Manager";
+
 		ServiceProvider.SetService<GameManager>(this);
 
 		camera = new Camera2D();
 		camera.Current = true;
 		AddChild(camera);
 
-		//DefaultState defaultState = new DefaultState();
-		stateManager = new StateManager();
-		AddChild(stateManager);
+		gameStateManager = new StateManager();
+		AddChild(gameStateManager);
+		
+		DefaultState defaultState = new DefaultState(gameStateManager);
+		gameStateManager.state = defaultState;
 
 		inputController = new Inputcontroller(); 
 		AddChild(inputController);
-		inputController.Initialize(stateManager);
+		inputController.Initialize(gameStateManager);
 
 		GuiManager guiManager = new GuiManager();
 		AddChild(guiManager);
 		ServiceProvider.SetService<GuiManager>(guiManager);
 
-		board = new Board(GRID_COLUMNS, GRID_ROWS);
+		AnimationManager animationManager = new AnimationManager();
+		AddChild(animationManager);
+		ServiceProvider.SetService<AnimationManager>(animationManager);
+
+		ResourceManager resourceManager = new ResourceManager();
+		AddChild(resourceManager);
+		ServiceProvider.SetService<ResourceManager>(resourceManager);
+
+		board = new Map(GRID_COLUMNS, GRID_ROWS);
 		Terrain terrain = new Terrain("Plains", demo);
 		board.Initialize(terrain);
+		MapGenerator mapgen = new MapGenerator(board);
+		AddChild(mapgen);
+		
+		//MapGenerator.GenerateRandomMap(board);
 		AddChild(board);
-		stateManager.board = board;
+		//stateManager.board = board;
 
 		Unit sneed = new Unit("Sneed", sneed_sprite);
-		board.Grid[5,5].unit = sneed;
+		board.Hexes[5,5].unit = sneed;
 
 		Unit chuck = new Unit("Chuck", chuck_sprite);
-		board.Grid[6,6].unit = chuck;
+		board.Hexes[6,6].unit = chuck;
 
 		Unit poly = new Unit("Polybro", polybro);
-		board.Grid[7,7].unit = poly;
+		board.Hexes[7,7].unit = poly;
 
 		Unit godo = new Unit("Godot", icon);
-		board.Grid[8,8].unit = godo;
+		board.Hexes[8,8].unit = godo;
 		
 		//board.debugToggleTileNumbers(true, Board.coordinateTypes.offset);
 	}

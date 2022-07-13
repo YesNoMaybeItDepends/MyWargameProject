@@ -12,6 +12,7 @@ margin_left = -176.0
 margin_top = -48.0
 margin_bottom = 48.0
 rect_min_size = Vector2( 176, 96 )
+mouse_filter = 1
 script = ExtResource( 2 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
@@ -35,22 +36,26 @@ alignment = 1
 margin_top = 14.0
 margin_right = 39.0
 margin_bottom = 28.0
+mouse_filter = 1
 text = "Sneed"
 
 [node name="HP" type="Label" parent="HBoxContainer/Stats"]
 margin_top = 32.0
 margin_right = 39.0
 margin_bottom = 46.0
+mouse_filter = 1
 text = "HP: 1"
 
 [node name="AP" type="Label" parent="HBoxContainer/Stats"]
 margin_top = 50.0
 margin_right = 39.0
 margin_bottom = 64.0
+mouse_filter = 1
 text = "AP: 3"
 
 [node name="STR" type="Label" parent="HBoxContainer/Stats"]
 margin_top = 68.0
 margin_right = 39.0
 margin_bottom = 82.0
+mouse_filter = 1
 text = "STR: 1"

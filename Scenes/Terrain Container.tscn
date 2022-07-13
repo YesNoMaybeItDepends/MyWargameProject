@@ -1,0 +1,69 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/PH2_IslandsOceans_27.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/TerrainContainer.cs" type="Script" id=2]
+
+[node name="Panel" type="Panel"]
+margin_right = 261.0
+margin_bottom = 96.0
+rect_min_size = Vector2( 222, 96 )
+script = ExtResource( 2 )
+
+[node name="Terrain Container" type="HBoxContainer" parent="."]
+margin_right = 187.0
+margin_bottom = 96.0
+
+[node name="Terrain Texture" type="TextureRect" parent="Terrain Container"]
+margin_right = 96.0
+margin_bottom = 96.0
+texture = ExtResource( 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Terrain Container"]
+margin_left = 100.0
+margin_right = 194.0
+margin_bottom = 96.0
+alignment = 1
+
+[node name="Terrain Name" type="Label" parent="Terrain Container/VBoxContainer"]
+margin_top = 17.0
+margin_right = 94.0
+margin_bottom = 31.0
+text = "Name: Ocean"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Terrain Container/VBoxContainer"]
+margin_top = 35.0
+margin_right = 94.0
+margin_bottom = 79.0
+
+[node name="Terrain Height" type="Label" parent="Terrain Container/VBoxContainer/HBoxContainer"]
+margin_top = 15.0
+margin_right = 70.0
+margin_bottom = 29.0
+text = "Height: 0.3"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Terrain Container/VBoxContainer/HBoxContainer"]
+margin_left = 74.0
+margin_right = 94.0
+margin_bottom = 44.0
+
+[node name="Increase Button" type="Button" parent="Terrain Container/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_right = 20.0
+margin_bottom = 20.0
+text = "+"
+
+[node name="Decrease Button" type="Button" parent="Terrain Container/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 24.0
+margin_right = 20.0
+margin_bottom = 44.0
+text = "-"
+
+[node name="VSlider" type="VSlider" parent="Terrain Container"]
+margin_left = 198.0
+margin_right = 214.0
+margin_bottom = 96.0
+min_value = -1.0
+max_value = 1.0
+step = 0.0
+value = 0.3
+tick_count = 3
+ticks_on_borders = true

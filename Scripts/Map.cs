@@ -2,9 +2,9 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class Board : Node2D
+public class Map : Node2D
 {
-    public Hex[,] Grid;
+    public Hex[,] Hexes;
 
     int GridRows;
     int GridColumns;
@@ -19,17 +19,18 @@ public class Board : Node2D
     // public int SpriteWidth = 64;
     // public int SpriteHeight = 64;
 
-    public Board(int gridColumns, int gridRows)
+    public Map(int gridColumns, int gridRows)
     {
         Name = "Board";
 
         GridRows = gridRows;
         GridColumns = gridColumns;
-        Grid = new Hex[gridRows,gridColumns];
+        Hexes = new Hex[gridRows,gridColumns];
     }
 
     public void Initialize(Terrain terrain)
     {
+        Texture forestTexture = GD.Load("res://Assets/PH2_DeadPlainsGray_04.png") as Texture;
 
         double hexY = outerRadius * Math.Sqrt(3);
         double hexX = outerRadius * 2;
@@ -40,12 +41,24 @@ public class Board : Node2D
             for (int row = 0; row < GridRows; row++)
             {              
                 // Make hex
-                Hex hex = new Hex(new Vector2(col,row));
+                Hex hex = new Hex(new Vector2(col,row), this);
                 
-                // Set hex Terrain
-                Terrain nuTerrain = new Terrain(terrain.Name, terrain.sprite.Texture.ResourcePath);
-                hex.terrain = nuTerrain;
                 
+                // DEBUG
+                if (col%2==0 && row%2==0)
+                {
+                    Terrain forest = new Terrain("Forest", 2, forestTexture);
+                    hex.terrain = forest;
+                    // hex.terrain.MovementCost = 2;
+                    // hex.terrain.sprite.Modulate = Colors.Yellow;
+                }
+                else
+                {
+                    // Set hex Terrain
+                    Terrain nuTerrain = new Terrain(terrain.Name, terrain.sprite.Texture.ResourcePath);
+                    hex.terrain = nuTerrain;
+                }
+
                 // Set hex Position
                 Vector2 position = new Vector2();
                 position.x = col * (float)hexHorizontalSpacing;
@@ -53,7 +66,7 @@ public class Board : Node2D
                 hex.Position = position;
 				
                 // Add hex to Grid
-                Grid[col,row] = hex;
+                Hexes[col,row] = hex;
                 
                 // Set hex Name
                 hex.Name = $"{col},{row}";
@@ -73,9 +86,9 @@ public class Board : Node2D
 
         if ((x >= 0 && x < GridColumns) && (y >= 0 && y < GridRows))
         {
-            if (Grid[x, y] != null)
+            if (Hexes[x, y] != null)
             {
-                hex = Grid[x, y];
+                hex = Hexes[x, y];
             }
         }
 
@@ -124,7 +137,7 @@ public class Board : Node2D
                                 label.Text = col+","+row;
                                 break;
                             case coordinateTypes.axial:
-                                label.Text = Grid[col,row].axialPos.ToStringOnSeparateLines();
+                                label.Text = Hexes[col,row].axialPos.ToStringOnSeparateLines();
                                 break;
                             case coordinateTypes.cube:
                                 label.Text = "ICE CUBE MUTHAFUGGA";
@@ -133,14 +146,14 @@ public class Board : Node2D
                         
                         label.RectPosition -= (new Vector2(SpriteHeight, SpriteWidth)*0.25f);
 
-                        Grid[col,row].AddChild(label);
+                        Hexes[col,row].AddChild(label);
                         label.Name = "TileNumber";
 
                         debugTileNumbers = true;
                     }
                     else
                     {
-                        Label label = Grid[col,row].GetNodeOrNull("TileNumber") as Label;
+                        Label label = Hexes[col,row].GetNodeOrNull("TileNumber") as Label;
                         if (label != null)
                         {
                             label.QueueFree();
